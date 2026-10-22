@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.git/
+.env
+video_agent/temp/
+video_agent/output/
+video_agent/cache/
+web/uploads/
+web/results/
+*.mp4
+*.mov
+.DS_Store
+node_modules/

@@ -4,9 +4,17 @@ Video Utility Functions
 import hashlib
 from pathlib import Path
 from typing import Tuple, Optional
-import cv2
-import numpy as np
 from loguru import logger
+
+# Optional imports for advanced features
+try:
+    import cv2
+    import numpy as np
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
+    cv2 = None
+    np = None
 
 
 def calculate_video_hash(video_path: Path) -> str:
@@ -27,9 +35,9 @@ def calculate_video_hash(video_path: Path) -> str:
 
 
 def resize_frame(
-    frame: np.ndarray,
+    frame,
     max_dimension: int = 1024,
-) -> np.ndarray:
+):
     """
     Resize frame to fit within max_dimension while preserving aspect ratio.
 
@@ -40,6 +48,10 @@ def resize_frame(
     Returns:
         Resized frame
     """
+    if not CV2_AVAILABLE:
+        logger.warning("OpenCV not available, returning original frame")
+        return frame
+
     height, width = frame.shape[:2]
 
     if width <= max_dimension and height <= max_dimension:
@@ -98,7 +110,7 @@ def calculate_crop_box(
     return (crop_x, crop_y, crop_width, crop_height)
 
 
-def detect_faces(frame: np.ndarray) -> list:
+def detect_faces(frame) -> list:
     """
     Detect faces in a frame using OpenCV.
 
@@ -108,6 +120,10 @@ def detect_faces(frame: np.ndarray) -> list:
     Returns:
         List of face bounding boxes [(x, y, w, h), ...]
     """
+    if not CV2_AVAILABLE:
+        logger.warning("OpenCV not available, face detection disabled")
+        return []
+
     try:
         # Convert to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -132,7 +148,7 @@ def detect_faces(frame: np.ndarray) -> list:
         return []
 
 
-def calculate_frame_difference(frame1: np.ndarray, frame2: np.ndarray) -> float:
+def calculate_frame_difference(frame1, frame2) -> float:
     """
     Calculate visual difference between two frames.
 
@@ -143,6 +159,9 @@ def calculate_frame_difference(frame1: np.ndarray, frame2: np.ndarray) -> float:
     Returns:
         Difference score (0-1, higher means more different)
     """
+    if not CV2_AVAILABLE:
+        return 0.0
+
     try:
         # Resize to same size if needed
         if frame1.shape != frame2.shape:
@@ -165,7 +184,7 @@ def calculate_frame_difference(frame1: np.ndarray, frame2: np.ndarray) -> float:
         return 0.0
 
 
-def is_blurry(frame: np.ndarray, threshold: float = 100.0) -> bool:
+def is_blurry(frame, threshold: float = 100.0) -> bool:
     """
     Check if a frame is blurry using Laplacian variance.
 
@@ -176,6 +195,9 @@ def is_blurry(frame: np.ndarray, threshold: float = 100.0) -> bool:
     Returns:
         True if frame is blurry
     """
+    if not CV2_AVAILABLE:
+        return False
+
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         laplacian = cv2.Laplacian(gray, cv2.CV_64F)
@@ -186,7 +208,7 @@ def is_blurry(frame: np.ndarray, threshold: float = 100.0) -> bool:
         return False
 
 
-def calculate_motion_score(frame1: np.ndarray, frame2: np.ndarray) -> float:
+def calculate_motion_score(frame1, frame2) -> float:
     """
     Calculate motion score between two frames using optical flow.
 
@@ -197,6 +219,9 @@ def calculate_motion_score(frame1: np.ndarray, frame2: np.ndarray) -> float:
     Returns:
         Motion score (0-1, higher means more motion)
     """
+    if not CV2_AVAILABLE:
+        return 0.0
+
     try:
         # Convert to grayscale
         gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)

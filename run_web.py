@@ -3,6 +3,7 @@
 Start the web application server
 """
 import sys
+import os
 import subprocess
 from pathlib import Path
 
@@ -58,10 +59,12 @@ def main():
 
     try:
         import uvicorn
+        # Use PORT environment variable for Railway/Render, default to 8000 for local
+        port = int(os.getenv("PORT", 8000))
         uvicorn.run(
             "web.app:app",
             host="0.0.0.0",
-            port=8000,
+            port=port,
             reload=True,
             log_level="info"
         )
