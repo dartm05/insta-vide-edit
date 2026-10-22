@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Video Editor - AI-Powered Style Transfer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Instagram Video Editor</h1>
+            <p class="subtitle">AI-powered video editing with style transfer</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('style-transfer')">
+                🎨 Style Transfer
+            </button>
+            <button class="tab-button" onclick="showTab('preset-styles')">
+                ✨ Preset Styles
+            </button>
+            <button class="tab-button" onclick="showTab('quick-convert')">
+                ⚡ Quick Convert
+            </button>
+        </div>
+
+        <!-- Style Transfer Tab -->
+        <div id="style-transfer" class="tab-content active">
+            <div class="card">
+                <h2>Copy Editing Style from Another Video</h2>
+                <p class="description">
+                    Upload a reference video (e.g., viral TikTok/Reel) and your content.
+                    The AI will analyze the reference video's editing style and apply it to your content.
+                </p>
+
+                <form id="styleTransferForm">
+                    <div class="form-group">
+                        <label for="referenceVideo">
+                            📹 Reference Video (the style to copy)
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="referenceVideo" accept="video/*" required>
+                            <span class="file-name" id="refFileName">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputVideo">
+                            🎥 Your Video (to be edited)
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="inputVideo" accept="video/*" required>
+                            <span class="file-name" id="inputFileName">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="styleFormat">📱 Output Format</label>
+                        <select id="styleFormat" required>
+                            <option value="reels">Instagram Reels (9:16 - 90s)</option>
+                            <option value="stories">Instagram Stories (9:16 - 60s)</option>
+                            <option value="feed_square">Feed Square (1:1)</option>
+                            <option value="feed_portrait">Feed Portrait (4:5)</option>
+                            <option value="feed_landscape">Feed Landscape (1.91:1)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="styleName">
+                            🏷️ Style Name (optional)
+                        </label>
+                        <input type="text" id="styleName" placeholder="e.g., Viral TikTok Style">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Process Video
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preset Styles Tab -->
+        <div id="preset-styles" class="tab-content">
+            <div class="card">
+                <h2>Apply Preset Editing Style</h2>
+                <p class="description">
+                    Use pre-configured professional editing styles. Perfect for consistent branding.
+                </p>
+
+                <div class="preset-grid">
+                    {% for preset in preset_styles %}
+                    <div class="preset-card" onclick="selectPreset('{{ preset.id }}')">
+                        <h3>{{ preset.name }}</h3>
+                        <p>{{ preset.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form id="presetForm" style="margin-top: 2rem;">
+                    <input type="hidden" id="selectedPreset" required>
+
+                    <div class="form-group">
+                        <label for="presetVideo">
+                            🎥 Your Video
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="presetVideo" accept="video/*" required>
+                            <span class="file-name" id="presetFileName">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="presetFormat">📱 Output Format</label>
+                        <select id="presetFormat" required>
+                            <option value="reels">Instagram Reels (9:16 - 90s)</option>
+                            <option value="stories">Instagram Stories (9:16 - 60s)</option>
+                            <option value="feed_square">Feed Square (1:1)</option>
+                            <option value="feed_portrait">Feed Portrait (4:5)</option>
+                            <option value="feed_landscape">Feed Landscape (1.91:1)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Process Video
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Convert Tab -->
+        <div id="quick-convert" class="tab-content">
+            <div class="card">
+                <h2>Quick Format Conversion</h2>
+                <p class="description">
+                    Convert your video to Instagram format without style editing.
+                </p>
+
+                <form id="convertForm">
+                    <div class="form-group">
+                        <label for="convertVideo">
+                            🎥 Your Video
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="convertVideo" accept="video/*" required>
+                            <span class="file-name" id="convertFileName">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="convertFormat">📱 Output Format</label>
+                        <select id="convertFormat" required>
+                            <option value="reels">Instagram Reels (9:16 - 90s)</option>
+                            <option value="stories">Instagram Stories (9:16 - 60s)</option>
+                            <option value="feed_square">Feed Square (1:1)</option>
+                            <option value="feed_portrait">Feed Portrait (4:5)</option>
+                            <option value="feed_landscape">Feed Landscape (1.91:1)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        ⚡ Convert Now
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div id="progressSection" class="card" style="display: none;">
+            <h3>Processing...</h3>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <p id="progressText" class="progress-text">Starting...</p>
+            <p id="statusText" class="status-text"></p>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="card" style="display: none;">
+            <h3>✅ Your Video is Ready!</h3>
+            <div class="result-actions">
+                <button onclick="downloadResult()" class="btn btn-success">
+                    ⬇️ Download Video
+                </button>
+                <button onclick="resetForm()" class="btn btn-secondary">
+                    🔄 Process Another Video
+                </button>
+            </div>
+            <div id="videoPreview" style="margin-top: 2rem;"></div>
+        </div>
+
+        <!-- Error Section -->
+        <div id="errorSection" class="card error" style="display: none;">
+            <h3>❌ Processing Failed</h3>
+            <p id="errorText"></p>
+            <button onclick="resetForm()" class="btn btn-secondary">
+                🔄 Try Again
+            </button>
+        </div>
+
+        <footer>
+            <p>Built with AI-powered video editing technology</p>
+            <p class="small">Supports MP4, MOV, AVI, and more | Max file size: 500MB</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
