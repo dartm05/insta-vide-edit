@@ -1,0 +1,65 @@
+<!-- Add this new tab to index.html -->
+        <div id="batch-process" class="tab-content">
+            <div class="card">
+                <h2>📦 Batch Processing</h2>
+                <p class="description">
+                    Upload multiple videos at once, preview them, and process in batch.
+                </p>
+
+                <form id="batchForm">
+                    <div class="form-group">
+                        <label for="batchVideos">
+                            📹 Select Multiple Videos
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="batchVideos" accept="video/*" multiple required 
+                                   onchange="handleMultipleFileUpload(this.files, 'batch')">
+                            <span class="file-name" id="batchFileName">No files chosen</span>
+                        </div>
+                        <p class="small-text">Hold Ctrl/Cmd to select multiple files</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchProcessingOption">Processing Type</label>
+                        <select id="batchProcessingOption" onchange="toggleBatchOptions()">
+                            <option value="convert">Quick Convert (fastest)</option>
+                            <option value="preset">Apply Preset Style</option>
+                        </select>
+                    </div>
+
+                    <div id="batchPresetSelect" class="form-group" style="display: none;">
+                        <label for="batchPreset">Select Style</label>
+                        <select id="batchPreset">
+                            {% for preset in preset_styles %}
+                            <option value="{{ preset.id }}">{{ preset.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchFormat">📱 Output Format</label>
+                        <select id="batchFormat">
+                            <option value="reels">Instagram Reels (9:16 - 90s)</option>
+                            <option value="stories">Instagram Stories (9:16 - 60s)</option>
+                            <option value="feed_square">Feed Square (1:1)</option>
+                            <option value="feed_portrait">Feed Portrait (4:5)</option>
+                            <option value="feed_landscape">Feed Landscape (1.91:1)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+<script>
+function toggleBatchOptions() {
+    const option = document.getElementById('batchProcessingOption').value;
+    const presetSelect = document.getElementById('batchPresetSelect');
+    presetSelect.style.display = option === 'preset' ? 'block' : 'none';
+}
+
+document.getElementById('batchVideos').addEventListener('change', function(e) {
+    const count = e.target.files.length;
+    document.getElementById('batchFileName').textContent = 
+        count > 0 ? `${count} file${count > 1 ? 's' : ''} selected` : 'No files chosen';
+});
+</script>

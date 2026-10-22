@@ -374,3 +374,28 @@ document.getElementById('convertForm')?.addEventListener('submit', async (e) => 
 document.addEventListener('DOMContentLoaded', () => {
     setupFileInputs();
 });
+
+// Batch processing functions
+function toggleBatchOptions() {
+    const option = document.getElementById('batchProcessingOption').value;
+    const presetSelect = document.getElementById('batchPresetSelect');
+    if (presetSelect) {
+        presetSelect.style.display = option === 'preset' ? 'block' : 'none';
+    }
+}
+
+// Update batch file name display
+document.addEventListener('DOMContentLoaded', function() {
+    const batchInput = document.getElementById('batchVideos');
+    if (batchInput) {
+        batchInput.addEventListener('change', function(e) {
+            const count = e.target.files.length;
+            const display = document.getElementById('batchFileName');
+            if (display) {
+                display.textContent = count > 0 ? 
+                    `${count} file${count > 1 ? 's' : ''} selected` : 
+                    'No files chosen';
+            }
+        });
+    }
+});

@@ -23,6 +23,9 @@
             <button class="tab-button" onclick="showTab('quick-convert')">
                 ⚡ Quick Convert
             </button>
+            <button class="tab-button" onclick="showTab('batch-process')">
+                📦 Batch Process
+            </button>
         </div>
 
         <!-- Style Transfer Tab -->
@@ -165,6 +168,60 @@
             </div>
         </div>
 
+        <!-- Batch Processing Tab -->
+        <div id="batch-process" class="tab-content">
+            <div class="card">
+                <h2>📦 Batch Processing</h2>
+                <p class="description">
+                    Upload multiple videos at once, preview them, and process in batch.
+                </p>
+
+                <form id="batchForm">
+                    <div class="form-group">
+                        <label for="batchVideos">
+                            📹 Select Multiple Videos
+                        </label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="batchVideos" accept="video/*" multiple required
+                                   onchange="handleMultipleFileUpload(this.files, 'batch')">
+                            <span class="file-name" id="batchFileName">No files chosen</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Hold Ctrl/Cmd to select multiple files
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchProcessingOption">Processing Type</label>
+                        <select id="batchProcessingOption" onchange="toggleBatchOptions()">
+                            <option value="convert">Quick Convert (fastest)</option>
+                            <option value="preset">Apply Preset Style</option>
+                        </select>
+                    </div>
+
+                    <div id="batchPresetSelect" class="form-group" style="display: none;">
+                        <label for="batchPreset">Select Style</label>
+                        <select id="batchPreset">
+                            {% for preset in preset_styles %}
+                            <option value="{{ preset.id }}">{{ preset.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchFormat">📱 Output Format</label>
+                        <select id="batchFormat">
+                            <option value="reels">Instagram Reels (9:16 - 90s)</option>
+                            <option value="stories">Instagram Stories (9:16 - 60s)</option>
+                            <option value="feed_square">Feed Square (1:1)</option>
+                            <option value="feed_portrait">Feed Portrait (4:5)</option>
+                            <option value="feed_landscape">Feed Landscape (1.91:1)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Progress Section -->
         <div id="progressSection" class="card" style="display: none;">
             <h3>Processing...</h3>
@@ -205,5 +262,6 @@
     </div>
 
     <script src="/static/js/app.js"></script>
+    <script src="/static/js/preview.js"></script>
 </body>
 </html>
