@@ -104,11 +104,36 @@ class VideoOutput:
                 cmd,
                 capture_output=True,
                 text=True,
-                check=True
+                timeout=300  # 5 minute timeout
             )
-            logger.info(f"Video exported successfully: {output_path}")
+
+            # Check if FFmpeg succeeded
+            if result.returncode != 0:
+                error_msg = f"FFmpeg failed with return code {result.returncode}"
+                if result.stderr:
+                    # Extract only the error lines, not the full stderr
+                    stderr_lines = result.stderr.split('\n')
+                    error_lines = [line for line in stderr_lines if
+                                  'error' in line.lower() or 'failed' in line.lower() or
+                                  'invalid' in line.lower() or 'unable' in line.lower()]
+                    if error_lines:
+                        error_msg += ": " + "; ".join(error_lines[-5:])  # Last 5 error lines
+                    else:
+                        # If no specific errors, show last few lines
+                        error_msg += ": " + "; ".join(stderr_lines[-3:])
+                logger.error(f"Export failed: {error_msg}")
+                raise RuntimeError(error_msg)
+
+            # Verify output file was created
+            if not output_path.exists() or output_path.stat().st_size == 0:
+                raise RuntimeError(f"Output file not created or is empty: {output_path}")
+
+            logger.info(f"Video exported successfully: {output_path} ({output_path.stat().st_size} bytes)")
             return output_path
 
+        except subprocess.TimeoutExpired:
+            logger.error("Export timed out after 5 minutes")
+            raise RuntimeError("Video export timed out")
         except subprocess.CalledProcessError as e:
             logger.error(f"Export failed: {e.stderr}")
             raise RuntimeError(f"Video export failed: {e.stderr}")
