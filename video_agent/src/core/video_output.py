@@ -65,13 +65,28 @@ class VideoOutput:
             '-s', f'{spec.resolution[0]}x{spec.resolution[1]}',
         ])
 
-        # Audio encoding settings
-        cmd.extend([
-            '-c:a', spec.audio_codec,
-            '-b:a', spec.audio_bitrate,
-            '-ar', '44100',  # Sample rate
-            '-ac', '2',  # Stereo
-        ])
+        # Check if input has audio stream
+        try:
+            probe_cmd = ['ffprobe', '-v', 'error', '-select_streams', 'a:0',
+                        '-show_entries', 'stream=codec_type', '-of', 'default=nw=1',
+                        str(input_path)]
+            probe_result = subprocess.run(probe_cmd, capture_output=True, text=True, timeout=5)
+            has_audio = 'audio' in probe_result.stdout.lower()
+        except:
+            has_audio = False
+
+        # Audio encoding settings (only if input has audio)
+        if has_audio:
+            cmd.extend([
+                '-c:a', spec.audio_codec,
+                '-b:a', spec.audio_bitrate,
+                '-ar', '44100',  # Sample rate
+                '-ac', '2',  # Stereo
+            ])
+        else:
+            # No audio in input, skip audio encoding
+            cmd.extend(['-an'])  # Disable audio
+            logger.info("Input video has no audio stream, encoding video only")
 
         # Additional flags for compatibility
         cmd.extend([
